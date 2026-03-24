@@ -21,7 +21,6 @@
             align-items: center;
             font-family: 'Segoe UI', 'Poppins', 'Roboto', sans-serif;
             padding: 20px;
-            cursor: pointer;
         }
 
         /* hoofdlayout: links = opa, rechts = upgrades */
@@ -35,21 +34,20 @@
             align-items: stretch;
         }
 
-        /* LINKERKANT: OPA GEDEELTE */
+        /* LINKERKANT: OPA GEDEELTE - WITTE ACHTERGROND */
         .grandpa-section {
             flex: 1.2;
-            min-width: 320px;
-            background: linear-gradient(145deg, #fef0db, #fae6c3);
-            border-radius: 64px;
-            padding: 30px 25px;
-            box-shadow: 0 25px 45px rgba(0,0,0,0.4), inset 0 1px 4px rgba(255,245,200,0.9);
+            min-width: 350px;
+            background: white;
+            border-radius: 48px;
+            padding: 25px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.3);
             text-align: center;
             transition: all 0.3s;
         }
 
         .stats-card {
-            background: #2c2418e0;
-            backdrop-filter: blur(10px);
+            background: linear-gradient(135deg, #2c2418, #1f1910);
             border-radius: 60px;
             padding: 15px 20px;
             margin-bottom: 25px;
@@ -58,7 +56,7 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }
 
         .cookie-count {
@@ -108,23 +106,30 @@
             transition: all 0.3s;
         }
 
-        /* OPA KLIKGEBIED */
+        /* OPA KLIKGEBIED - WITTE ACHTERGROND, VIDEO HIERIN */
         .grandpa-click-area {
+            background: white;
+            border-radius: 40px;
+            padding: 20px;
+            margin: 10px 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 20px 0 15px;
             cursor: pointer;
             position: relative;
+            min-height: 400px;
         }
 
         .grandpa-container {
             position: relative;
             transition: transform 0.1s cubic-bezier(0.2, 1.2, 0.4, 1);
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
 
         .grandpa-container:active {
-            transform: scale(0.96);
+            transform: scale(0.97);
         }
 
         .grandpa-image {
@@ -132,21 +137,32 @@
             height: 320px;
             object-fit: contain;
             border-radius: 50%;
-            background: #ecc897;
-            box-shadow: 0 25px 35px rgba(0,0,0,0.4), inset 0 0 0 8px #fff5e6, 0 0 0 4px #b97f4b;
+            background: #f5e5c8;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.2), inset 0 0 0 6px #fff5e6, 0 0 0 3px #b97f4b;
             transition: all 0.2s ease;
             cursor: pointer;
         }
 
+        /* Video die in dezelfde plek komt als de opa */
+        .grandpa-video {
+            width: 320px;
+            height: 320px;
+            object-fit: cover;
+            border-radius: 50%;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.2), inset 0 0 0 6px #fff5e6, 0 0 0 3px #b97f4b;
+            cursor: pointer;
+            background: #000;
+        }
+
         .click-feedback {
-            position: absolute;
+            position: fixed;
             pointer-events: none;
             font-weight: bold;
             font-size: 2rem;
             color: #ffaa33;
             text-shadow: 2px 2px 4px #5a3a1a;
             white-space: nowrap;
-            z-index: 100;
+            z-index: 1000;
             animation: floatUpFade 0.8s ease-out forwards;
         }
 
@@ -161,7 +177,7 @@
             }
         }
 
-        /* RIBBEL ANIMATIE BIJ KLIK */
+        /* RIBBEL ANIMATIE */
         @keyframes ripple {
             0% {
                 transform: scale(0);
@@ -174,12 +190,12 @@
         }
 
         .click-ripple {
-            position: absolute;
+            position: fixed;
             border-radius: 50%;
             background: radial-gradient(circle, rgba(255,215,0,0.6), rgba(255,100,0,0));
             pointer-events: none;
             animation: ripple 0.5s ease-out forwards;
-            z-index: 50;
+            z-index: 999;
         }
 
         /* DANS ANIMATIE VOOR OPA */
@@ -346,7 +362,7 @@
             border-radius: 60px;
             font-weight: bold;
             font-size: 1.1rem;
-            z-index: 1000;
+            z-index: 2000;
             animation: slideInRight 0.4s ease, fadeOut 0.5s ease 3s forwards;
             box-shadow: 0 8px 25px rgba(0,0,0,0.3);
             display: flex;
@@ -364,71 +380,18 @@
             to { opacity: 0; visibility: hidden; }
         }
 
-        /* video overlay */
-        .video-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            animation: fadeIn 0.3s;
-            cursor: pointer;
-        }
-
-        .video-container {
-            position: relative;
-            max-width: 90%;
-            max-height: 90%;
-            background: #000;
-            border-radius: 24px;
-            overflow: hidden;
-        }
-
-        .video-container video {
-            width: 100%;
-            height: auto;
-            max-height: 80vh;
-        }
-
-        .close-video {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            font-size: 28px;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
         footer {
             font-size: 0.7rem;
             text-align: center;
             margin-top: 20px;
-            color: #5a3e28;
+            color: #8b7355;
         }
 
         @media (max-width: 850px) {
             .game-layout {
                 flex-direction: column;
             }
-            .grandpa-image {
+            .grandpa-image, .grandpa-video {
                 width: 250px;
                 height: 250px;
             }
@@ -437,7 +400,7 @@
 </head>
 <body>
 <div class="game-layout">
-    <!-- LINKS: OPA GEDEELTE -->
+    <!-- LINKS: OPA GEDEELTE - WITTE ACHTERGROND -->
     <div class="grandpa-section">
         <div class="stats-card">
             <div class="cookie-count">
@@ -451,6 +414,7 @@
             </div>
         </div>
 
+        <!-- Opa klikgebied - hier komt de opa OF de video in hetzelfde vak -->
         <div class="grandpa-click-area" id="grandpaClickArea">
             <div class="grandpa-container" id="grandpaContainer">
                 <img id="grandpaImage" class="grandpa-image" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23e0ac77' stroke='%238b5a2b' stroke-width='2'/%3E%3Ccircle cx='35' cy='42' r='5' fill='white'/%3E%3Ccircle cx='65' cy='42' r='5' fill='white'/%3E%3Ccircle cx='35' cy='43' r='2.5' fill='black'/%3E%3Ccircle cx='65' cy='43' r='2.5' fill='black'/%3E%3Cpath d='M45 62 Q50 70 55 62' stroke='%238b4513' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Crect x='42' y='22' width='16' height='18' rx='8' fill='%23b97f4b'/%3E%3Cpath d='M30 30 L20 35 L24 28 Z' fill='%23b97f4b'/%3E%3Cpath d='M70 30 L80 35 L76 28 Z' fill='%23b97f4b'/%3E%3Cline x1='25' y1='75' x2='40' y2='85' stroke='%238b4513' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E" alt="Opa met stok">
@@ -480,6 +444,8 @@
     let achievements = {
         dancingOpa: false  // eerste achievement bij 50 punten
     };
+    let isVideoPlaying = false;
+    let videoElement = null;
     
     // upgrades: click en auto
     const upgrades = [
@@ -510,31 +476,111 @@
     }
 
     // Opa afbeelding updaten (opametstok.png / opazonderstok.png)
-    // opazonderstok.png = zonder stok, opametstok.png = met stok
     function updateGrandpaImage() {
+        if (isVideoPlaying) return; // Als video speelt, geen afbeelding tonen
+        
         const img = document.getElementById("grandpaImage");
+        if (!img) return;
+        
         if (achievements.dancingOpa) {
             // Achievement behaald => opa zonder stok (opazonderstok.png)
             const testImg = new Image();
-            testImg.onload = () => { img.src = "opazonderstok.png"; };
+            testImg.onload = () => { if (!isVideoPlaying) img.src = "opazonderstok.png"; };
             testImg.onerror = () => {
-                // fallback SVG zonder stok
-                img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23e0ac77' stroke='%238b5a2b' stroke-width='2'/%3E%3Ccircle cx='35' cy='42' r='5' fill='white'/%3E%3Ccircle cx='65' cy='42' r='5' fill='white'/%3E%3Ccircle cx='35' cy='43' r='2.5' fill='black'/%3E%3Ccircle cx='65' cy='43' r='2.5' fill='black'/%3E%3Cpath d='M45 62 Q50 70 55 62' stroke='%238b4513' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Crect x='42' y='22' width='16' height='18' rx='8' fill='%23b97f4b'/%3E%3Cpath d='M30 30 L20 35 L24 28 Z' fill='%23b97f4b'/%3E%3Cpath d='M70 30 L80 35 L76 28 Z' fill='%23b97f4b'/%3E%3C/svg%3E";
+                if (!isVideoPlaying) {
+                    img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23e0ac77' stroke='%238b5a2b' stroke-width='2'/%3E%3Ccircle cx='35' cy='42' r='5' fill='white'/%3E%3Ccircle cx='65' cy='42' r='5' fill='white'/%3E%3Ccircle cx='35' cy='43' r='2.5' fill='black'/%3E%3Ccircle cx='65' cy='43' r='2.5' fill='black'/%3E%3Cpath d='M45 62 Q50 70 55 62' stroke='%238b4513' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Crect x='42' y='22' width='16' height='18' rx='8' fill='%23b97f4b'/%3E%3Cpath d='M30 30 L20 35 L24 28 Z' fill='%23b97f4b'/%3E%3Cpath d='M70 30 L80 35 L76 28 Z' fill='%23b97f4b'/%3E%3C/svg%3E";
+                }
             };
             testImg.src = "opazonderstok.png";
         } else {
             // Normaal: opa met stok (opametstok.png)
             const testImg = new Image();
-            testImg.onload = () => { img.src = "opametstok.png"; };
+            testImg.onload = () => { if (!isVideoPlaying) img.src = "opametstok.png"; };
             testImg.onerror = () => {
-                img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23e0ac77' stroke='%238b5a2b' stroke-width='2'/%3E%3Ccircle cx='35' cy='42' r='5' fill='white'/%3E%3Ccircle cx='65' cy='42' r='5' fill='white'/%3E%3Ccircle cx='35' cy='43' r='2.5' fill='black'/%3E%3Ccircle cx='65' cy='43' r='2.5' fill='black'/%3E%3Cpath d='M45 62 Q50 70 55 62' stroke='%238b4513' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Crect x='42' y='22' width='16' height='18' rx='8' fill='%23b97f4b'/%3E%3Cpath d='M30 30 L20 35 L24 28 Z' fill='%23b97f4b'/%3E%3Cpath d='M70 30 L80 35 L76 28 Z' fill='%23b97f4b'/%3E%3Cline x1='25' y1='75' x2='40' y2='85' stroke='%238b4513' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E";
+                if (!isVideoPlaying) {
+                    img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23e0ac77' stroke='%238b5a2b' stroke-width='2'/%3E%3Ccircle cx='35' cy='42' r='5' fill='white'/%3E%3Ccircle cx='65' cy='42' r='5' fill='white'/%3E%3Ccircle cx='35' cy='43' r='2.5' fill='black'/%3E%3Ccircle cx='65' cy='43' r='2.5' fill='black'/%3E%3Cpath d='M45 62 Q50 70 55 62' stroke='%238b4513' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Crect x='42' y='22' width='16' height='18' rx='8' fill='%23b97f4b'/%3E%3Cpath d='M30 30 L20 35 L24 28 Z' fill='%23b97f4b'/%3E%3Cpath d='M70 30 L80 35 L76 28 Z' fill='%23b97f4b'/%3E%3Cline x1='25' y1='75' x2='40' y2='85' stroke='%238b4513' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E";
+                }
             };
             testImg.src = "opametstok.png";
+        }
+    }
+    
+    // Video afspelen in hetzelfde vak (vervangt de opa tijdelijk)
+    function playDancingVideoInSameSpot() {
+        if (isVideoPlaying) return;
+        
+        const container = document.getElementById("grandpaContainer");
+        const img = document.getElementById("grandpaImage");
+        
+        // Verberg de afbeelding
+        img.style.display = "none";
+        
+        // Maak video element aan
+        const video = document.createElement("video");
+        video.className = "grandpa-video";
+        video.id = "dancingVideo";
+        video.autoplay = true;
+        video.muted = false;
+        video.loop = false;
+        video.playsInline = true;
+        
+        // Probeer dansendeopa.mp4 te laden
+        const source = document.createElement("source");
+        source.src = "dansendeopa.mp4";
+        source.type = "video/mp4";
+        video.appendChild(source);
+        
+        video.innerHTML = "Uw browser ondersteunt geen video, maar Opa danst in gedachten! 🕺";
+        
+        // Fallback als video niet kan laden
+        video.onerror = () => {
+            console.log("Video niet gevonden, toon animatie");
+            stopVideoAndRestoreImage();
+            showFloatingMessage("🎵 Opa danst feestelijk! (video niet gevonden)", 2000);
+        };
+        
+        video.onended = () => {
+            // Na afloop van video weer de opa tonen
+            stopVideoAndRestoreImage();
+        };
+        
+        container.appendChild(video);
+        videoElement = video;
+        isVideoPlaying = true;
+        
+        // Probeer video af te spelen
+        video.play().catch(e => {
+            console.log("Autoplay prevented:", e);
+            stopVideoAndRestoreImage();
+        });
+        
+        // Automatisch stoppen na 5 seconden als de video niet eindigt
+        setTimeout(() => {
+            if (isVideoPlaying && videoElement && !videoElement.ended) {
+                stopVideoAndRestoreImage();
+            }
+        }, 6000);
+    }
+    
+    function stopVideoAndRestoreImage() {
+        if (videoElement && videoElement.parentNode) {
+            videoElement.pause();
+            videoElement.remove();
+            videoElement = null;
+        }
+        isVideoPlaying = false;
+        const img = document.getElementById("grandpaImage");
+        if (img) {
+            img.style.display = "block";
+            updateGrandpaImage();
         }
     }
 
     // KLIK OP OPA met +X tekst onder de klikplek
     function clickGrandpa(event) {
+        // Als video speelt, kan er niet geklikt worden voor punten
+        if (isVideoPlaying) return;
+        
         let gain = currentClickPower();
         cookies += gain;
         
@@ -595,45 +641,17 @@
         setTimeout(() => ripple.remove(), 500);
     }
     
-    // Achievement: 50 punten -> dansende opa video + opazonderstok.png
+    // Achievement: 50 punten -> dansende opa video in hetzelfde vak + opazonderstok.png
     function checkAchievements() {
         if (!achievements.dancingOpa && cookies >= 50) {
             achievements.dancingOpa = true;
             updateGrandpaImage();
             showAchievementNotification("🏆 Achievement: Dansende Opa! 🕺", "50 punten behaald! Opa danst!");
-            showDancingGrandpaVideo();
+            // Speel video in hetzelfde vak
+            playDancingVideoInSameSpot();
             updateUI();
             saveGame();
         }
-    }
-    
-    function showDancingGrandpaVideo() {
-        const overlay = document.createElement('div');
-        overlay.className = 'video-overlay';
-        overlay.innerHTML = `
-            <div class="video-container">
-                <div class="close-video">✕</div>
-                <video id="dancingVideo" autoplay muted>
-                    <source src="dansendeopa.mp4" type="video/mp4">
-                    🕺 Opa danst!
-                </video>
-            </div>
-        `;
-        document.body.appendChild(overlay);
-        const video = overlay.querySelector('#dancingVideo');
-        const closeBtn = overlay.querySelector('.close-video');
-        video.onerror = () => {
-            showFloatingMessage("🎵 Opa danst feestelijk! (video niet gevonden)", 2000);
-            overlay.remove();
-        };
-        const closeVideo = () => {
-            if(video) video.pause();
-            overlay.remove();
-        };
-        closeBtn.onclick = closeVideo;
-        overlay.onclick = (e) => { if(e.target === overlay) closeVideo(); };
-        video.onended = () => setTimeout(closeVideo, 500);
-        setTimeout(() => { if(document.body.contains(overlay)) closeVideo(); }, 8000);
     }
     
     function showAchievementNotification(title, msg) {
@@ -692,6 +710,8 @@
     }
     
     function buyUpgrade(upgradeId) {
+        if (isVideoPlaying) return; // Geen upgrades kopen tijdens video
+        
         const upgrade = upgrades.find(u => u.id === upgradeId);
         if(!upgrade) return;
         const cost = getUpgradeCost(upgrade);
@@ -699,7 +719,7 @@
             cookies -= cost;
             upgrade.owned++;
             // Shake effect op upgrade kaart
-            const card = document.querySelector(`.buy-btn[data-id="${upgradeId}"]`).closest('.upgrade-card');
+            const card = document.querySelector(`.buy-btn[data-id="${upgradeId}"]`)?.closest('.upgrade-card');
             if(card) card.classList.add('shake-effect');
             setTimeout(() => card?.classList.remove('shake-effect'), 300);
             updateUI();
@@ -707,12 +727,16 @@
             showFloatingMessage(`✨ ${upgrade.name} gekocht!`, 1000);
         } else {
             const btn = document.querySelector(`.buy-btn[data-id="${upgradeId}"]`);
-            btn.style.transform = "translateX(4px)";
-            setTimeout(() => btn.style.transform = "", 150);
+            if(btn) {
+                btn.style.transform = "translateX(4px)";
+                setTimeout(() => btn.style.transform = "", 150);
+            }
         }
     }
     
     function resetGame() {
+        if (isVideoPlaying) stopVideoAndRestoreImage();
+        
         cookies = 0;
         upgrades.forEach(up => up.owned = 0);
         achievements.dancingOpa = false;
@@ -733,11 +757,11 @@
             upgrades: upgrades.map(u => ({ id: u.id, owned: u.owned })),
             achievements: achievements
         };
-        localStorage.setItem("grandpaClickerFinal", JSON.stringify(saveData));
+        localStorage.setItem("grandpaClickerFinalV2", JSON.stringify(saveData));
     }
     
     function loadGame() {
-        const raw = localStorage.getItem("grandpaClickerFinal");
+        const raw = localStorage.getItem("grandpaClickerFinalV2");
         if(!raw) return false;
         try {
             const data = JSON.parse(raw);
@@ -762,12 +786,14 @@
     function startAutoIncome() {
         if(autoInterval) clearInterval(autoInterval);
         autoInterval = setInterval(() => {
-            let auto = getTotalAutoPerSec();
-            if(auto > 0) {
-                cookies += auto;
-                checkAchievements();
-                updateUI();
-                saveGame();
+            if (!isVideoPlaying) {
+                let auto = getTotalAutoPerSec();
+                if(auto > 0) {
+                    cookies += auto;
+                    checkAchievements();
+                    updateUI();
+                    saveGame();
+                }
             }
         }, 1000);
     }
@@ -776,7 +802,10 @@
         const clickArea = document.getElementById("grandpaClickArea");
         const handler = (e) => {
             e.preventDefault();
-            clickGrandpa(e);
+            // Alleen klikken als er geen video speelt
+            if (!isVideoPlaying) {
+                clickGrandpa(e);
+            }
         };
         clickArea.addEventListener("click", handler);
         clickArea.addEventListener("touchstart", handler);
