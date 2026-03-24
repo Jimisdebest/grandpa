@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>👴 Grandpa Clicker - Opa Clicker Game</title>
+    <style>
+        * {
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a472a 0%, #0e2a1a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Poppins', 'Roboto', sans-serif;
+            padding: 20px;
+            cursor: pointer;
+        }
+
+        /* hoofdlayout: links = opa, rechts = upgrades */
+        .game-layout {
+            max-width: 1300px;
+            width: 100%;
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: stretch;
+        }
+
+        /* LINKERKANT: OPA GEDEELTE */
+        .grandpa-section {
+            flex: 1.2;
+            min-width: 320px;
+            background: linear-gradient(145deg, #fef0db, #fae6c3);
+            border-radius: 64px;
+            padding: 30px 25px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.4), inset 0 1px 4px rgba(255,245,200,0.9);
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stats-card {
+            background: #2c2418e0;
+            backdrop-filter: blur(10px);
+            border-radius: 60px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .cookie-count {
+            background: linear-gradient(135deg, #f8b84a, #f5a623);
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 2rem;
+            color: #2c1a0a;
+            text-shadow: 0 1px 0 #ffe0a3;
+            box-shadow: 0 4px 0 #a5661a;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cookie-count span {
+            font-size: 1.2rem;
+            background: #3b2a1a;
+            color: #ffdd99;
+            padding: 4px 12px;
+            border-radius: 40px;
+        }
+
+        .pps {
+            background: #1e3a2a;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: #ffe0aa;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .achievement-badge {
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #2d1f0c;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        /* OPA KLIKGEBIED */
+        .grandpa-click-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0 15px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .grandpa-container {
+            position: relative;
+            transition: transform 0.1s cubic-bezier(0.2, 1.2, 0.4, 1);
+        }
+
+        .grandpa-container:active {
+            transform: scale(0.96);
+        }
+
+        .grandpa-image {
+            width: 320px;
+            height: 320px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: #ecc897;
+            box-shadow: 0 25px 35px rgba(0,0,0,0.4), inset 0 0 0 8px #fff5e6, 0 0 0 4px #b97f4b;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .click-feedback {
+            position: absolute;
+            pointer-events: none;
+            font-weight: bold;
+            font-size: 2rem;
+            color: #ffaa33;
+            text-shadow: 2px 2px 4px #5a3a1a;
+            white-space: nowrap;
+            z-index: 100;
+            animation: floatUpFade 0.8s ease-out forwards;
+        }
+
+        @keyframes floatUpFade {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(0.8);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--x, 20px), var(--y, -80px)) scale(1.2);
+            }
+        }
+
+        /* RIBBEL ANIMATIE BIJ KLIK */
+        @keyframes ripple {
+            0% {
+                transform: scale(0);
+                opacity: 0.6;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        .click-ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,215,0,0.6), rgba(255,100,0,0));
+            pointer-events: none;
+            animation: ripple 0.5s ease-out forwards;
+            z-index: 50;
+        }
+
+        /* DANS ANIMATIE VOOR OPA */
+        @keyframes dancingGrandpa {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(5deg) scale(1.05); }
+            75% { transform: rotate(-5deg) scale(1.05); }
+        }
+
+        .dance-animation {
+            animation: dancingGrandpa 0.3s ease-in-out 3;
+        }
+
+        /* SHAKE BIJ UPGRADE */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .shake-effect {
+            animation: shake 0.2s ease-in-out;
+        }
+
+        /* RECHTERKANT: UPGRADES */
+        .upgrades-section {
+            flex: 0.9;
+            min-width: 320px;
+            background: linear-gradient(145deg, #ecd9b4, #e2ca9c);
+            border-radius: 56px;
+            padding: 25px 20px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.4), inset 0 1px 3px rgba(255,250,210,0.8);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            max-height: 700px;
+        }
+
+        .upgrades-header {
+            font-size: 1.9rem;
+            font-weight: bold;
+            color: #3e2a1f;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #f3b33d;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .upgrade-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            flex: 1;
+        }
+
+        .upgrade-card {
+            background: #fffaf0;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 18px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border: 1px solid #ffefc8;
+        }
+
+        .upgrade-card:hover {
+            transform: translateX(-5px);
+            background: #fffff0;
+        }
+
+        .upgrade-info {
+            flex: 2;
+        }
+
+        .upgrade-name {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #5c381d;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .upgrade-desc {
+            font-size: 0.75rem;
+            color: #8b6946;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        .upgrade-cost {
+            background: #f3d9a4;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            color: #4a2e16;
+        }
+
+        .buy-btn {
+            background: linear-gradient(135deg, #ffb347, #ff9500);
+            border: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 10px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            color: #2e1c0c;
+            font-family: inherit;
+            transition: 0.05s linear;
+            box-shadow: 0 4px 0 #a5621a;
+            width: 110px;
+            text-align: center;
+        }
+
+        .buy-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #a5621a;
+        }
+
+        .buy-btn.disabled {
+            opacity: 0.5;
+            transform: none;
+            pointer-events: none;
+            filter: grayscale(0.1);
+        }
+
+        .reset-area {
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .reset-btn {
+            background: #aa6f3c;
+            border: none;
+            color: #fff2df;
+            padding: 10px 28px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.1s;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
+
+        .reset-btn:active {
+            transform: scale(0.96);
+        }
+
+        .achievement-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ffd966, #ffaa33);
+            color: #2c1a0c;
+            padding: 16px 28px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            z-index: 1000;
+            animation: slideInRight 0.4s ease, fadeOut 0.5s ease 3s forwards;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(500px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        /* video overlay */
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            animation: fadeIn 0.3s;
+            cursor: pointer;
+        }
+
+        .video-container {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            background: #000;
+            border-radius: 24px;
+            overflow: hidden;
+        }
+
+        .video-container video {
+            width: 100%;
+            height: auto;
+            max-height: 80vh;
+        }
+
+        .close-video {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        footer {
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: 20px;
+            color: #5a3e28;
+        }
+
+        @media (max-width: 850px) {
+            .game-layout {
+                flex-direction: column;
+            }
+            .grandpa-image {
+                width: 250px;
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="game-layout">
+    <!-- LINKS: OPA GEDEELTE -->
+    <div class="grandpa-section">
+        <div class="stats-card">
+            <div class="cookie-count">
+                🍪 <span id="cookieAmount">0</span>
+            </div>
+            <div class="pps">
+                ⚡ <span id="ppsValue">0</span>/s
+            </div>
+            <div class="achievement-badge" id="achievementBadge">
+                🏆 Geen
+            </div>
+        </div>
+
+        <div class="grandpa-click-area" id="grandpaClickArea">
+            <div class="grandpa-container" id="grandpaContainer">
+                <img id="grandpaImage" class="grandpa-image" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23e0ac77' stroke='%238b5a2b' stroke-width='2'/%3E%3Ccircle cx='35' cy='42' r='5' fill='white'/%3E%3Ccircle cx='65' cy='42' r='5' fill='white'/%3E%3Ccircle cx='35' cy='43' r='2.5' fill='black'/%3E%3Ccircle cx='65' cy='43' r='2.5' fill='black'/%3E%3Cpath d='M45 62 Q50 70 55 62' stroke='%238b4513' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Crect x='42' y='22' width='16' height='18' rx='8' fill='%23b97f4b'/%3E%3Cpath d='M30 30 L20 35 L24 28 Z' fill='%23b97f4b'/%3E%3Cpath d='M70 30 L80 35 L76 28 Z' fill='%23b97f4b'/%3E%3Cline x1='25' y1='75' x2='40' y2='85' stroke='%238b4513' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E" alt="Opa met stok">
+            </div>
+        </div>
+        <footer>👆 Klik op Opa! Elke klik geeft punten!</footer>
+    </div>
+
+    <!-- RECHTS: UPGRADES -->
+    <div class="upgrades-section">
+        <div class="upgrades-header">
+            🛒 UPGRADES 🛒
+        </div>
+        <div class="upgrade-list" id="upgradeList">
+            <!-- upgrades worden hier geladen -->
+        </div>
+        <div class="reset-area">
+            <button class="reset-btn" id="resetGame">🔄 Nieuw spelletje</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ================= SPEL DATA ==================
+    let cookies = 0;
+    let clickPower = 1;
+    let achievements = {
+        dancingOpa: false  // eerste achievement bij 50 punten
+    };
+    
+    // upgrades: click en auto
+    const upgrades = [
+        { id: "stronger_hands", name: "💪 Sterke handen", desc: "+1 per klik", baseCost: 15, type: "click", value: 1, owned: 0, costMultiplier: 1.25 },
+        { id: "walking_stick", name: "🦯 Betere stok", desc: "+5 per klik", baseCost: 80, type: "click", value: 5, owned: 0, costMultiplier: 1.3 },
+        { id: "grandma_help", name: "👵 Oma hulp", desc: "+12 per klik", baseCost: 350, type: "click", value: 12, owned: 0, costMultiplier: 1.35 },
+        { id: "twin_grandpas", name: "👴👴 Tweeling", desc: "+40 per klik", baseCost: 1200, type: "click", value: 40, owned: 0, costMultiplier: 1.4 },
+        { id: "click_bot", name: "🤖 Klikbot", desc: "+1 per seconde", baseCost: 100, type: "auto", value: 1, owned: 0, costMultiplier: 1.5 },
+        { id: "grandpa_factory", name: "🏭 Opa-fabriek", desc: "+8 per seconde", baseCost: 650, type: "auto", value: 8, owned: 0, costMultiplier: 1.45 },
+        { id: "retirement_fund", name: "💰 Pensioenfonds", desc: "+45 per seconde", baseCost: 2800, type: "auto", value: 45, owned: 0, costMultiplier: 1.55 },
+        { id: "ancient_legacy", name: "🏆 Erfenis", desc: "+220 per seconde", baseCost: 9500, type: "auto", value: 220, owned: 0, costMultiplier: 1.6 }
+    ];
+
+    function getUpgradeCost(upgrade) {
+        return Math.floor(upgrade.baseCost * Math.pow(upgrade.costMultiplier, upgrade.owned));
+    }
+
+    function getTotalClickBonus() {
+        return upgrades.filter(u => u.type === "click").reduce((sum, u) => sum + (u.value * u.owned), 0);
+    }
+
+    function getTotalAutoPerSec() {
+        return upgrades.filter(u => u.type === "auto").reduce((sum, u) => sum + (u.value * u.owned), 0);
+    }
+
+    function currentClickPower() {
+        return clickPower + getTotalClickBonus();
+    }
+
+    // Opa afbeelding updaten (opametstok.png / opazonderstok.png)
+    // opazonderstok.png = zonder stok, opametstok.png = met stok
+    function updateGrandpaImage() {
+        const img = document.getElementById("grandpaImage");
+        if (achievements.dancingOpa) {
+            // Achievement behaald => opa zonder stok (opazonderstok.png)
+            const testImg = new Image();
+            testImg.onload = () => { img.src = "opazonderstok.png"; };
+            testImg.onerror = () => {
+                // fallback SVG zonder stok
+                img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23e0ac77' stroke='%238b5a2b' stroke-width='2'/%3E%3Ccircle cx='35' cy='42' r='5' fill='white'/%3E%3Ccircle cx='65' cy='42' r='5' fill='white'/%3E%3Ccircle cx='35' cy='43' r='2.5' fill='black'/%3E%3Ccircle cx='65' cy='43' r='2.5' fill='black'/%3E%3Cpath d='M45 62 Q50 70 55 62' stroke='%238b4513' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Crect x='42' y='22' width='16' height='18' rx='8' fill='%23b97f4b'/%3E%3Cpath d='M30 30 L20 35 L24 28 Z' fill='%23b97f4b'/%3E%3Cpath d='M70 30 L80 35 L76 28 Z' fill='%23b97f4b'/%3E%3C/svg%3E";
+            };
+            testImg.src = "opazonderstok.png";
+        } else {
+            // Normaal: opa met stok (opametstok.png)
+            const testImg = new Image();
+            testImg.onload = () => { img.src = "opametstok.png"; };
+            testImg.onerror = () => {
+                img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23e0ac77' stroke='%238b5a2b' stroke-width='2'/%3E%3Ccircle cx='35' cy='42' r='5' fill='white'/%3E%3Ccircle cx='65' cy='42' r='5' fill='white'/%3E%3Ccircle cx='35' cy='43' r='2.5' fill='black'/%3E%3Ccircle cx='65' cy='43' r='2.5' fill='black'/%3E%3Cpath d='M45 62 Q50 70 55 62' stroke='%238b4513' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Crect x='42' y='22' width='16' height='18' rx='8' fill='%23b97f4b'/%3E%3Cpath d='M30 30 L20 35 L24 28 Z' fill='%23b97f4b'/%3E%3Cpath d='M70 30 L80 35 L76 28 Z' fill='%23b97f4b'/%3E%3Cline x1='25' y1='75' x2='40' y2='85' stroke='%238b4513' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E";
+            };
+            testImg.src = "opametstok.png";
+        }
+    }
+
+    // KLIK OP OPA met +X tekst onder de klikplek
+    function clickGrandpa(event) {
+        let gain = currentClickPower();
+        cookies += gain;
+        
+        // Toon +getal op klikplek
+        showClickNumber(event, gain);
+        createRipple(event);
+        
+        // Dans animatie voor opa bij elke klik
+        const grandpaImg = document.getElementById("grandpaImage");
+        grandpaImg.classList.add("dance-animation");
+        setTimeout(() => grandpaImg.classList.remove("dance-animation"), 400);
+        
+        // Achievement check
+        checkAchievements();
+        
+        updateUI();
+        saveGame();
+    }
+    
+    // Toon +getal op exacte kliklocatie
+    function showClickNumber(event, amount) {
+        let x, y;
+        if (event.touches) {
+            x = event.touches[0].clientX;
+            y = event.touches[0].clientY;
+        } else {
+            x = event.clientX;
+            y = event.clientY;
+        }
+        
+        const feedback = document.createElement("div");
+        feedback.className = "click-feedback";
+        feedback.innerText = `+${amount}`;
+        feedback.style.left = (x - 25) + "px";
+        feedback.style.top = (y - 30) + "px";
+        feedback.style.setProperty('--x', Math.random() * 40 - 20 + 'px');
+        feedback.style.setProperty('--y', '-70px');
+        document.body.appendChild(feedback);
+        setTimeout(() => feedback.remove(), 700);
+    }
+    
+    function createRipple(event) {
+        let x, y;
+        if (event.touches) {
+            x = event.touches[0].clientX;
+            y = event.touches[0].clientY;
+        } else {
+            x = event.clientX;
+            y = event.clientY;
+        }
+        const ripple = document.createElement("div");
+        ripple.className = "click-ripple";
+        ripple.style.left = (x - 30) + "px";
+        ripple.style.top = (y - 30) + "px";
+        ripple.style.width = "60px";
+        ripple.style.height = "60px";
+        document.body.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 500);
+    }
+    
+    // Achievement: 50 punten -> dansende opa video + opazonderstok.png
+    function checkAchievements() {
+        if (!achievements.dancingOpa && cookies >= 50) {
+            achievements.dancingOpa = true;
+            updateGrandpaImage();
+            showAchievementNotification("🏆 Achievement: Dansende Opa! 🕺", "50 punten behaald! Opa danst!");
+            showDancingGrandpaVideo();
+            updateUI();
+            saveGame();
+        }
+    }
+    
+    function showDancingGrandpaVideo() {
+        const overlay = document.createElement('div');
+        overlay.className = 'video-overlay';
+        overlay.innerHTML = `
+            <div class="video-container">
+                <div class="close-video">✕</div>
+                <video id="dancingVideo" autoplay muted>
+                    <source src="dansendeopa.mp4" type="video/mp4">
+                    🕺 Opa danst!
+                </video>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        const video = overlay.querySelector('#dancingVideo');
+        const closeBtn = overlay.querySelector('.close-video');
+        video.onerror = () => {
+            showFloatingMessage("🎵 Opa danst feestelijk! (video niet gevonden)", 2000);
+            overlay.remove();
+        };
+        const closeVideo = () => {
+            if(video) video.pause();
+            overlay.remove();
+        };
+        closeBtn.onclick = closeVideo;
+        overlay.onclick = (e) => { if(e.target === overlay) closeVideo(); };
+        video.onended = () => setTimeout(closeVideo, 500);
+        setTimeout(() => { if(document.body.contains(overlay)) closeVideo(); }, 8000);
+    }
+    
+    function showAchievementNotification(title, msg) {
+        const notif = document.createElement('div');
+        notif.className = 'achievement-notification';
+        notif.innerHTML = `<span style="font-size:2rem;">🏆</span><div><div style="font-size:1.2rem;">${title}</div><div>${msg}</div></div>`;
+        document.body.appendChild(notif);
+        setTimeout(() => notif.remove(), 3500);
+        const badge = document.getElementById('achievementBadge');
+        if(badge) {
+            badge.innerHTML = "🏆 Dansende Opa! 🕺";
+            badge.style.background = "linear-gradient(135deg, #ffaa44, #ff8800)";
+        }
+    }
+    
+    function showFloatingMessage(text, duration = 1500) {
+        const msg = document.createElement('div');
+        msg.className = 'achievement-notification';
+        msg.style.background = "#f5b642";
+        msg.innerHTML = text;
+        document.body.appendChild(msg);
+        setTimeout(() => msg.remove(), duration);
+    }
+    
+    function updateUI() {
+        document.getElementById("cookieAmount").innerText = Math.floor(cookies);
+        document.getElementById("ppsValue").innerText = getTotalAutoPerSec();
+        
+        const container = document.getElementById("upgradeList");
+        container.innerHTML = "";
+        upgrades.forEach(up => {
+            const cost = getUpgradeCost(up);
+            const canAfford = cookies >= cost;
+            const card = document.createElement("div");
+            card.className = "upgrade-card";
+            card.innerHTML = `
+                <div class="upgrade-info">
+                    <div class="upgrade-name">${up.name} (${up.owned})</div>
+                    <div class="upgrade-desc">
+                        <span>${up.desc}</span>
+                        <span class="upgrade-cost">💰 ${cost}</span>
+                    </div>
+                </div>
+                <button class="buy-btn ${!canAfford ? 'disabled' : ''}" data-id="${up.id}">Koop</button>
+            `;
+            container.appendChild(card);
+        });
+        
+        document.querySelectorAll('.buy-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = btn.getAttribute('data-id');
+                buyUpgrade(id);
+            });
+        });
+    }
+    
+    function buyUpgrade(upgradeId) {
+        const upgrade = upgrades.find(u => u.id === upgradeId);
+        if(!upgrade) return;
+        const cost = getUpgradeCost(upgrade);
+        if(cookies >= cost) {
+            cookies -= cost;
+            upgrade.owned++;
+            // Shake effect op upgrade kaart
+            const card = document.querySelector(`.buy-btn[data-id="${upgradeId}"]`).closest('.upgrade-card');
+            if(card) card.classList.add('shake-effect');
+            setTimeout(() => card?.classList.remove('shake-effect'), 300);
+            updateUI();
+            saveGame();
+            showFloatingMessage(`✨ ${upgrade.name} gekocht!`, 1000);
+        } else {
+            const btn = document.querySelector(`.buy-btn[data-id="${upgradeId}"]`);
+            btn.style.transform = "translateX(4px)";
+            setTimeout(() => btn.style.transform = "", 150);
+        }
+    }
+    
+    function resetGame() {
+        cookies = 0;
+        upgrades.forEach(up => up.owned = 0);
+        achievements.dancingOpa = false;
+        updateGrandpaImage();
+        const badge = document.getElementById('achievementBadge');
+        if(badge) {
+            badge.innerHTML = "🏆 Geen";
+            badge.style.background = "linear-gradient(135deg, #d4af37, #b8860b)";
+        }
+        updateUI();
+        saveGame();
+        showFloatingMessage("🔄 Spel herstart! Klik op Opa!", 1500);
+    }
+    
+    function saveGame() {
+        const saveData = {
+            cookies: cookies,
+            upgrades: upgrades.map(u => ({ id: u.id, owned: u.owned })),
+            achievements: achievements
+        };
+        localStorage.setItem("grandpaClickerFinal", JSON.stringify(saveData));
+    }
+    
+    function loadGame() {
+        const raw = localStorage.getItem("grandpaClickerFinal");
+        if(!raw) return false;
+        try {
+            const data = JSON.parse(raw);
+            cookies = data.cookies ?? 0;
+            if(data.upgrades) {
+                data.upgrades.forEach(saved => {
+                    const target = upgrades.find(u => u.id === saved.id);
+                    if(target) target.owned = saved.owned;
+                });
+            }
+            if(data.achievements) achievements = data.achievements;
+            updateGrandpaImage();
+            if(achievements.dancingOpa) {
+                const badge = document.getElementById('achievementBadge');
+                if(badge) badge.innerHTML = "🏆 Dansende Opa! 🕺";
+            }
+            return true;
+        } catch(e) { return false; }
+    }
+    
+    let autoInterval;
+    function startAutoIncome() {
+        if(autoInterval) clearInterval(autoInterval);
+        autoInterval = setInterval(() => {
+            let auto = getTotalAutoPerSec();
+            if(auto > 0) {
+                cookies += auto;
+                checkAchievements();
+                updateUI();
+                saveGame();
+            }
+        }, 1000);
+    }
+    
+    function attachClickEvents() {
+        const clickArea = document.getElementById("grandpaClickArea");
+        const handler = (e) => {
+            e.preventDefault();
+            clickGrandpa(e);
+        };
+        clickArea.addEventListener("click", handler);
+        clickArea.addEventListener("touchstart", handler);
+    }
+    
+    function init() {
+        attachClickEvents();
+        loadGame();
+        updateUI();
+        startAutoIncome();
+        document.getElementById("resetGame").addEventListener("click", resetGame);
+        setInterval(() => {
+            document.getElementById("cookieAmount").innerText = Math.floor(cookies);
+        }, 100);
+    }
+    
+    init();
+</script>
+</body>
+</html>
